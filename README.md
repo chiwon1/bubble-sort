@@ -63,10 +63,10 @@ $ npm start
 - 명시된 조건 이외에는 최대한 상식적으로 구현해주시기 바랍니다.
 - **창의적이고 멋있는 UI/UX를 보여주세요.**
 
-### 3. Advanced
+### 3. After
 
-- Quick과 Merge 중 하나를 구현해보세요.
-- 본인의 기존 코드를 최대한 재사용할 수 있도록 노력해보세요.
+- Quick과 Merge 중 한 가지를 선택하여 구현해보세요.
+- 추가 구현 과정에서 본인의 기존 코드를 최대한 재사용할 수 있도록 노력해보세요.
 
 1. [Bubble Sort](https://en.wikipedia.org/wiki/Bubble_sort)
 
