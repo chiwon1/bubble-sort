@@ -5,3 +5,19 @@
  */
 
 import "./controller";
+
+
+const $inputButton = document.querySelector("button");
+
+$inputButton.addEventListener("click", getInput);
+
+function getInput(e) {
+  e.preventDefault();
+  let $input = document.querySelector("input").value;
+  console.log($input);
+}
+
+// 1.HTML 구조만들기
+// 2.HTML 입력값 JS에서 받을 수 있도록 연동
+// 숫자가 담긴 그림
+// 데이터 저장

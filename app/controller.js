@@ -23,6 +23,7 @@ function bubbleSort(items) {
   }
 }
 
+
 // NOTE: You can delete this (and related code)
-const today = new Date();
-view.showMessage(today);
+// const today = new Date();
+// view.showMessage(today);
