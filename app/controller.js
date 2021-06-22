@@ -18,6 +18,12 @@ function bubbleSort(items) {
         const tmp = items[j];
         items[j] = items[j + 1];
         items[j + 1] = tmp;
+
+        function swap() {
+          
+        }
+
+        // swap();
       }
     }
   }
