@@ -4,73 +4,79 @@
 
  */
 
-import { max } from 'lodash';
+import model from "./model";
+import view from "./view";
 import "./controller";
 
-const inputNumber = [];
-const $boxes = [];
-const $boxBoard = document.querySelector(".box-board");
-let index = 0;
+// const model.$boxes = [];
+// let model.index = 0;
 
-function input() {
-  const $input = document.querySelector("input");
-  const $inputButton = document.querySelector("button");
+// function addEvents () {
+//   const $input = document.querySelector("input");
+//   const $inputButton = document.querySelector("button");
+//   $input.addEventListener("keypress", enter);
+//   $inputButton.addEventListener("click", getInput);
+// }
 
-  $input.addEventListener("keypress", enter);
-  $inputButton.addEventListener("click", getInput
-  );
+view.addEvents();
 
-  function getInput() {
-    const input = $input.value;
-    $input.value = '';
+// const model.inputNumber = [];
 
-    if (input > 99 || input < 0 || input.length === 0) {
-      console.log("wrong number");
-      return;
-    }
 
-    if (index > 9) {
-      console.log("Maximum number of input is 10");
-      return;
-    }
+// function getInput() {
+//   const $input = document.querySelector("input");
 
-    function createBox(input) {
-      inputNumber[index] = input;
-      $boxes[index] = document.createElement("div");
+//   const input = Number($input.value);
+//   $input.value = '';
 
-      const box = $boxes[index];
+//   if (input > 100 || input < 1 || input.length === 0) {
+//     console.log("wrong number");
+//     return;
+//   }
 
-      $boxBoard.appendChild(box);
-      box.textContent = input;
-      box.classList.add("box");
-      box.style.height = `${input}%`;
+//   if (index > 9) {
+//     console.log("Maximum number of input is 10");
+//     return;
+//   }
 
-      index++;
-    }
+//   createBox(input);
 
-    createBox(input);
-  }
+// }
 
-  function enter(event) {
-    if (event.key === "Enter") {
-      event.preventDefault();
-      getInput();
-    }
-  }
-}
 
-input();
+// function createBox(input) {
+//   const $boxBoard = document.querySelector(".box-board");
+
+//   model.inputNumber[index] = input;
+//   $boxes[index] = document.createElement("div");
+
+//   const box = $boxes[index];
+
+//   $boxBoard.appendChild(box);
+//   box.textContent = input;
+//   box.classList.add("box");
+//   box.style.height = `${input}%`;
+
+//   index++;
+// }
+
+// function enter(event) {
+//   if (event.key === "Enter") {
+//     event.preventDefault();
+//     getInput();
+//   }
+// }
+
 
 const $sortButton = document.querySelector(".sort-button");
 
 $sortButton.addEventListener("click", sort);
 
 function sort() {
-  bubbleSort(inputNumber);
+  bubbleSort(model.inputNumber);
 
   async function bubbleSort(items) {
     const length = items.length;
-    let indexOfThesorted = items.length - 1;
 
     for (let i = 0; i < length; i++) {
       for (let j = 0; j < length - i - 1; j++) {
@@ -84,18 +90,20 @@ function sort() {
           function swap() {
             return new Promise(function(resolve, reject) {
               setTimeout(function() {
-                for (let k = 0; k < $boxes.length; k++) {
-                  $boxes[k].classList.remove("comparing");
+                for (let k = 0; k < length - i; k++) {
+                  model.$boxes[k].classList.remove("comparing");
                 }
 
-                $boxes[j].classList.add("comparing");
-                $boxes[j + 1].classList.add("comparing");
+                model.$boxes[j].classList.add("comparing");
+                model.$boxes[j + 1].classList.add("comparing");
 
-                const temp = $boxes[j].textContent;
-                $boxes[j].textContent = $boxes[j + 1].textContent;
-                $boxes[j + 1].textContent = temp;
-                $boxes[j].style.height = `${$boxes[j].textContent}%`;
-                $boxes[j + 1].style.height = `${$boxes[j + 1].textContent}%`;
+                const temp = model.$boxes[j].textContent;
+
+                model.$boxes[j].textContent = model.$boxes[j + 1].textContent;
+                model.$boxes[j + 1].textContent = temp;
+
+                model.$boxes[j].style.height = `${model.$boxes[j].textContent}%`;
+                model.$boxes[j + 1].style.height = `${model.$boxes[j + 1].textContent}%`;
 
                 resolve();
               }, 200);
@@ -103,10 +111,8 @@ function sort() {
           }
         }
       }
-    }
 
-    for (let i = 0; i < $boxes.length; i++) {
-      $boxes[i].classList.remove("comparing");
+      model.$boxes[length - i - 1].classList.add("sorted");
     }
   }
 }
