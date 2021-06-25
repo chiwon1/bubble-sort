@@ -1,9 +1,7 @@
 import model from "./model";
 import view from "./view";
 
-
 const controller = (function() {
-  const $input = document.querySelector("input");
   const MAXIMUM_NUMBER_OF_INPUT = 10;
   const MINIMUM_NUMBER_OF_INPUT = 5;
   const MAXIMUM_INPUT = 100;
@@ -25,16 +23,16 @@ const controller = (function() {
         }
       }
 
-      view.colorTheSorted(length - i);
+      view.paintSortedBar(length - i);
     }
 
-    view.finishingEffect();
+    view.showFinishingEffect();
   }
 
   return {
     getInput: function() {
-      const input = Number($input.value);
-      $input.value = '';
+      const input = Number(view.$input.value);
+      view.$input.value = '';
 
       if (input > MAXIMUM_INPUT) {
         alert(`Maximum input is ${MAXIMUM_INPUT}`);
@@ -63,9 +61,9 @@ const controller = (function() {
     },
 
     sort: function() {
-      const sortMethod = view.getSortMethod();
+      const sortType = view.getSortType();
 
-      if (sortMethod === "how to sort") {
+      if (sortType === "how to sort") {
         alert("Please choose how to sort");
         return;
       }
@@ -77,7 +75,7 @@ const controller = (function() {
 
       view.disableButtons();
 
-      if (sortMethod === "bubble") {
+      if (sortType === "bubble") {
         bubbleSort(model.inputNumber);
       }
     },
