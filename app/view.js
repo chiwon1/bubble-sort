@@ -5,70 +5,84 @@ const view = (function() {
   const $selector = document.querySelector(".selector");
   const $inputButton = document.querySelector(".input-button");
   const $sortButton = document.querySelector(".start-button");
-  const $boxBoard = document.querySelector(".box-board");
+  const $barBoard = document.querySelector(".box-board");
+  const $input = document.querySelector(".input");
 
-  const MAX_PX = 450;
+  const SORTED = "sorted";
+  const COMPARING = "comparing";
+  const FINISHED = "finished";
+  const LEFT = "left";
+  const RIGHT = "right";
+  const BAR = "bar";
+
+  const MAXIMUM_BAR_HEIGHT_PIXEL = 450;
   const EFFECT_TIME = 200;
   const FINISH_EFFECT_TIME = 100;
 
   return {
-    $input: document.querySelector(".input"),
+    emptyInputBox: function() {
+      $input.value = '';
+    },
+
+    getInput: function() {
+      return Number($input.value);
+    },
 
     getSortType: function() {
       return $selector.value;
     },
 
     addEvents: function() {
-      view.$input.addEventListener("keypress", controller.enter);
+      $input.addEventListener("keypress", controller.enter);
       $inputButton.addEventListener("click", controller.getInput);
       $sortButton.addEventListener("click", controller.sort);
     },
 
-    createBox: function(input) {
+    createBar: function(input) {
       const index = model.index;
 
       model.inputNumber[index] = input;
-      model.$boxes[index] = document.createElement("div");
+      model.$bars[index] = document.createElement("div");
 
-      const box = model.$boxes[index];
+      const bar = model.$bars[index];
 
-      $boxBoard.appendChild(box);
+      $barBoard.appendChild(bar);
 
-      box.textContent = input;
-      box.classList.add("box");
+      bar.textContent = input;
+      bar.classList.add(BAR);
 
       view.adjustHeight();
     },
 
     disableButtons: function() {
-      view.$input.disabled = true;
+      $input.disabled = true;
       $inputButton.disabled = true;
       $sortButton.disabled = true;
     },
 
     reactivateButtons: function() {
-      view.$input.disabled = false;
+      $input.disabled = false;
       $inputButton.disabled = false;
       $sortButton.disabled = false;
     },
 
     adjustHeight: function() {
-      for (const div of model.$boxes) {
+      for (const div of model.$bars) {
         const value = Number(div.textContent);
         const maxInput = Math.max(...model.inputNumber);
 
-        div.style.height = `${MAX_PX * value / maxInput}px`;
+        div.style.height = `${MAXIMUM_BAR_HEIGHT_PIXEL * value / maxInput}px`;
       }
     },
 
-    swap: function(a, b, length) {
+    swap: function(left, right, length) {
       return new Promise(function(resolve) {
         setTimeout(function() {
-          view.paintBarsComparing(a, b, length);
+          view.paintBarsComparing(left, right, length);
 
-          const temp = model.$boxes[a].textContent;
-          model.$boxes[a].textContent = model.$boxes[b].textContent;
-          model.$boxes[b].textContent = temp;
+          const temp = model.$bars[left].textContent;
+          model.$bars[left].textContent = model.$bars[right].textContent;
+          model.$bars[right].textContent = temp;
 
           view.adjustHeight();
 
@@ -77,10 +91,10 @@ const view = (function() {
       });
     },
 
-    noSwap: function(a, b, length) {
+    noSwap: function(left, right, length) {
       return new Promise(function(resolve) {
         setTimeout(function() {
-          view.paintBarsComparing(a, b, length);
+          view.paintBarsComparing(left, right, length);
 
           resolve();
         }, EFFECT_TIME);
@@ -88,31 +102,31 @@ const view = (function() {
     },
 
     paintSortedBar: function(length) {
-      model.$boxes[length - 1].classList.add("sorted");
+      model.$bars[length - 1].classList.add(SORTED);
     },
 
-    paintBarsComparing: function(a, b, length) {
+    paintBarsComparing: function(left, right, length) {
       for (let j = 0; j < length; j++) {
-        model.$boxes[j].classList.remove("comparing");
+        model.$bars[j].classList.remove(COMPARING);
       }
 
-      model.$boxes[a].classList.add("comparing");
-      model.$boxes[b].classList.add("comparing");
+      model.$bars[left].classList.add(COMPARING);
+      model.$bars[right].classList.add(COMPARING);
     },
 
     showFinishingEffect: async function() {
-      const length = model.$boxes.length;
-      const boxes = model.$boxes;
+      const length = model.$bars.length;
+      const bars = model.$bars;
 
       for (let i = 0; i < length; i++) {
-        await showEffectToRight(i);
+        await showEffectToDirection(i, RIGHT);
       }
 
       for (let i = length - 1; i >= 0; i--) {
-        await showEffectToLeft(i);
+        await showEffectToDirection(i, LEFT);
 
         if (i === 0) {
-          boxes[0].classList.remove("finished");
+          bars[0].classList.remove(FINISHED);
         }
       }
 
@@ -123,39 +137,41 @@ const view = (function() {
 
       view.reactivateButtons();
 
-      function showEffectToRight(index) {
-        return new Promise(function(resolve) {
-          setTimeout(function() {
-            if (index !== 0) {
-              boxes[index - 1].classList.remove("finished");
-            }
+      function showEffectToDirection(index, direction) {
+        if (direction === "right") {
+          return new Promise(function(resolve) {
+            setTimeout(function() {
+              if (index !== 0) {
+                bars[index - 1].classList.remove(FINISHED);
+              }
 
-            boxes[index].classList.add("finished");
+              bars[index].classList.add(FINISHED);
 
-            resolve();
-          }, FINISH_EFFECT_TIME);
-        });
-      }
+              resolve();
+            }, FINISH_EFFECT_TIME);
+          });
+        }
 
-      function showEffectToLeft(index) {
-        return new Promise(function(resolve) {
-          setTimeout(function() {
-            if (index !== length - 1) {
-              boxes[index + 1].classList.remove("finished");
-            }
+        if (direction === "left") {
+          return new Promise(function(resolve) {
+            setTimeout(function() {
+              if (index !== length - 1) {
+                bars[index + 1].classList.remove(FINISHED);
+              }
 
-            boxes[index].classList.add("finished");
+              bars[index].classList.add(FINISHED);
 
-            resolve();
-          }, FINISH_EFFECT_TIME);
-        });
+              resolve();
+            }, FINISH_EFFECT_TIME);
+          });
+        }
       }
 
       function paintAllBars() {
         return new Promise(function(resolve) {
           setTimeout(function() {
             for (let i = 0; i < length; i++) {
-              boxes[i].classList.add("finished");
+              bars[i].classList.add(FINISHED);
             }
 
             resolve();
@@ -167,7 +183,7 @@ const view = (function() {
         return new Promise(function(resolve) {
           setTimeout(function() {
             for (let i = 0; i < length; i++) {
-              boxes[i].classList.remove("finished");
+              bars[i].classList.remove(FINISHED);
             }
 
             resolve();
